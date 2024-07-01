@@ -4,6 +4,7 @@ import base64
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import datetime
 
 st.title('NBA Player Stats Explorer')
 
@@ -12,7 +13,10 @@ This app performs simple webscraping of NBA player stats data
 """)
 
 st.sidebar.header('User Input Features')
-selected_year = st.sidebar.selectbox('Year', list(reversed(range(1950,2022))))
+year = datetime.datetime.now().year
+if datetime.datetime.now().month > 5:
+   year += 1 
+selected_year = st.sidebar.selectbox('Year', list(reversed(range(1950, year))))
 
 # Web scraping of NBA player stats
 @st.cache
@@ -54,10 +58,9 @@ st.markdown(filedownload(df_selected_team), unsafe_allow_html=True)
 # Heatmap
 if st.button('Intercorrelation Heatmap'):
     st.header('Intercorrelation Matrix Heatmap')
-    df_selected_team.to_csv('output.csv',index=False)
+    df_selected_team.to_csv('output.csv', index=False)
     df = pd.read_csv('output.csv')
-
-    corr = df.corr()
+    corr = df.corr(numeric_only=True)
     mask = np.zeros_like(corr)
     mask[np.triu_indices_from(mask)] = True
     with sns.axes_style("white"):
